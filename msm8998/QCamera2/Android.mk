@@ -1,10 +1,6 @@
 # Enable SDLLVM compiler option for build flavour >= N flavour
 PLATFORM_SDK_NPDK = 24
 ENABLE_CAM_SDLLVM  := $(shell if [ $(PLATFORM_SDK_VERSION) -ge $(PLATFORM_SDK_NPDK) ] ; then echo true ; else echo false ; fi)
-ifeq ($(ENABLE_CAM_SDLLVM),true)
-SDCLANGSAVE := $(SDCLANG)
-SDCLANG := true
-endif
 
 ifneq (,$(filter $(TARGET_ARCH), arm arm64))
 
@@ -12,6 +8,9 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ifneq ($(ENABLE_CAM_SDLLVM),true)
+LOCAL_SDCLANG := false
+endif
 
 LOCAL_COPY_HEADERS_TO := qcom/camera
 LOCAL_COPY_HEADERS := QCameraFormat.h
@@ -159,7 +158,4 @@ LOCAL_32_BIT_ONLY := $(BOARD_QTI_CAMERA_32BIT_ONLY)
 include $(BUILD_SHARED_LIBRARY)
 
 include $(call first-makefiles-under,$(LOCAL_PATH))
-endif
-ifeq ($(ENABLE_CAM_SDLLVM),true)
-SDCLANG := $(SDCLANGSAVE)
 endif
